@@ -43,6 +43,7 @@
     button,a{-webkit-tap-highlight-color:transparent}
     a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--gray-light);outline-offset:4px}
     .wrap{width:min(var(--content),calc(100% - 48px));margin-inline:auto}
+    body{padding-top:calc(70px + env(safe-area-inset-top))}
 
     /* Snow layer is fixed to the viewport; page height remains content-driven. */
     .snow {
@@ -91,7 +92,7 @@
     }
 
     .header{
-      position:sticky;top:0;z-index:50;
+      position:fixed;top:0;left:0;right:0;width:100%;z-index:50;
       background:rgba(5,5,8,.88);
       backdrop-filter:blur(20px);
       -webkit-backdrop-filter:blur(20px);
@@ -357,6 +358,7 @@
 
 
     @media(max-width:760px){
+      body{padding-top:calc(62px + env(safe-area-inset-top))}
       .header{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
     }
 
@@ -394,7 +396,7 @@
     }
 
     /* Snow is enabled on every screen size and browser. */
-    #snow.snow{display:block!important;visibility:visible!important;opacity:1!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;overflow:hidden!important;pointer-events:none!important;z-index:9999!important}
+    #snow.snow{display:block!important;visibility:visible!important;opacity:1!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;overflow:hidden!important;pointer-events:none!important;z-index:40!important}
     #snow .snowflake{position:absolute!important;top:-30px!important;display:block!important;color:rgba(220,225,235,.9)!important;line-height:1!important;text-shadow:0 0 6px rgba(200,210,230,.5)!important;-webkit-animation:fall linear infinite;animation:fall linear infinite;-webkit-animation-fill-mode:backwards;animation-fill-mode:backwards}
     @-webkit-keyframes fall{0%{-webkit-transform:translate3d(0,0,0) rotate(0deg);opacity:.9}100%{-webkit-transform:translate3d(25px,110vh,0) rotate(360deg);opacity:.2}}
     @keyframes fall{0%{transform:translate3d(0,0,0) rotate(0deg);opacity:.9}100%{transform:translate3d(25px,110vh,0) rotate(360deg);opacity:.2}}
@@ -704,9 +706,9 @@
       if(!container||container.dataset.snowReady==='1')return;
       container.dataset.snowReady='1';
       var mobile=window.innerWidth<768||/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      var count=mobile?40:60, symbols=['❄','❅','•','·','✦'], fragment=document.createDocumentFragment();
+      var count=mobile?60:90, symbols=['❄','❅','•','·','✦'], fragment=document.createDocumentFragment();
       for(var i=0;i<count;i++){
-        var flake=document.createElement('span'), duration=10+Math.random()*14;
+        var flake=document.createElement('span'), duration=18+Math.random()*10;
         flake.className='snowflake';
         flake.textContent=symbols[Math.floor(Math.random()*symbols.length)];
         flake.style.left=(Math.random()*100)+'vw';
@@ -714,7 +716,7 @@
         flake.style.opacity=(.5+Math.random()*.45).toString();
         flake.style.webkitAnimationDuration=duration+'s';
         flake.style.animationDuration=duration+'s';
-        var delay=Math.random()*1.5;
+        var delay=-Math.random()*duration;
         flake.style.webkitAnimationDelay=delay+'s';
         flake.style.animationDelay=delay+'s';
         fragment.appendChild(flake);
