@@ -395,8 +395,9 @@
       .js-motion .reveal{opacity:1;transform:none}
     }
 
-    /* Snow is enabled on every screen size and browser. */
-    #snow.snow{display:block!important;visibility:visible!important;opacity:1!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;overflow:hidden!important;pointer-events:none!important;z-index:40!important}
+    /* Snow fades in shortly after the page has loaded. */
+    #snow.snow{display:block!important;visibility:visible!important;opacity:0!important;transition:opacity .8s ease!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;overflow:hidden!important;pointer-events:none!important;z-index:40!important}
+    #snow.snow.is-visible{opacity:1!important}
     #snow .snowflake{position:absolute!important;top:-30px!important;display:block!important;color:rgba(220,225,235,.9)!important;line-height:1!important;text-shadow:0 0 6px rgba(200,210,230,.5)!important;-webkit-animation:fall linear infinite;animation:fall linear infinite;-webkit-animation-fill-mode:backwards;animation-fill-mode:backwards}
     @-webkit-keyframes fall{0%{-webkit-transform:translate3d(0,0,0) rotate(0deg);opacity:.9}100%{-webkit-transform:translate3d(25px,110vh,0) rotate(360deg);opacity:.2}}
     @keyframes fall{0%{transform:translate3d(0,0,0) rotate(0deg);opacity:.9}100%{transform:translate3d(25px,110vh,0) rotate(360deg);opacity:.2}}
@@ -459,7 +460,7 @@
         <div class="section-title reveal">
           <div class="eyebrow">Каталог</div>
           <h2>Наши продукты</h2>
-          <p>Выбери подходящий вариант. Покупка и все вопросы — напрямую у <a href="https://t.me/qgios" target="_blank" rel="noopener noreferrer">@qgios</a>.</p>
+          <p>Выбери подходящий вариант. Покупка и все вопросы — напрямую у <a href="https://t.me/qgios" target="_blank" rel="noopener noreferrer">продавца</a>.</p>
         </div>
         <div class="products">
           <article class="product reveal">
@@ -558,7 +559,7 @@
           <details>
             <summary>На каких устройствах работает VPN?</summary>
             <div class="faq-body"><div class="faq-body-inner">
-              <p>На iOS и Android через приложение WireGuard. Совместимость и шаги установки можно уточнить у <a href="https://t.me/qgios" target="_blank" rel="noopener noreferrer">@qgios</a> до покупки.</p>
+              <p>На iOS и Android через приложение WireGuard. Совместимость и шаги установки можно уточнить у <a href="https://t.me/qgios" target="_blank" rel="noopener noreferrer">продавца</a> до покупки.</p>
             </div></div>
           </details>
           <details>
@@ -570,13 +571,13 @@
           <details>
             <summary>Как получить помощь?</summary>
             <div class="faq-body"><div class="faq-body-inner">
-              <p>Напиши напрямую <a href="https://t.me/qgios" target="_blank" rel="noopener noreferrer">@qgios</a>.</p>
+              <p>Напиши напрямую <a href="https://t.me/qgios" target="_blank" rel="noopener noreferrer">продавцу</a>.</p>
             </div></div>
           </details>
           <details>
             <summary>Что входит в danyaVIP?</summary>
             <div class="faq-body"><div class="faq-body-inner">
-              <p>Конфигурации и приватные VPN для PUBG Mobile, а также закрытый контент сообщества. Точный состав, срок доступа и продление уточняй перед оплатой у <a href="https://t.me/qgios" target="_blank" rel="noopener noreferrer">@qgios</a>.</p>
+              <p>Конфигурации и приватные VPN для PUBG Mobile, а также закрытый контент сообщества. Точный состав, срок доступа и продление уточняй перед оплатой у <a href="https://t.me/qgios" target="_blank" rel="noopener noreferrer">продавца</a>.</p>
             </div></div>
           </details>
           <details>
@@ -705,6 +706,10 @@
       var container=document.getElementById('snow');
       if(!container||container.dataset.snowReady==='1')return;
       container.dataset.snowReady='1';
+
+      // Respect the visitor's reduced-motion preference.
+      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+
       var mobile=window.innerWidth<768||/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       var count=mobile?60:90, symbols=['❄','❅','•','·','✦'], fragment=document.createDocumentFragment();
       for(var i=0;i<count;i++){
@@ -716,12 +721,19 @@
         flake.style.opacity=(.5+Math.random()*.45).toString();
         flake.style.webkitAnimationDuration=duration+'s';
         flake.style.animationDuration=duration+'s';
-        var delay=-Math.random()*duration;
+        // Spread flakes across the full fall cycle immediately.
+        // Negative delays create a full, continuous snowfall from the first frame.
+        var delay=-(duration*i/count);
         flake.style.webkitAnimationDelay=delay+'s';
         flake.style.animationDelay=delay+'s';
         fragment.appendChild(flake);
       }
       container.appendChild(fragment);
+
+      // Start snowfall immediately; only the overlay itself fades in smoothly.
+      requestAnimationFrame(function(){
+        container.classList.add('is-visible');
+      });
     }
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startSnow,{once:true});else startSnow();
   })();
